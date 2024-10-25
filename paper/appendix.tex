@@ -140,6 +140,16 @@ We provide a solution for handling ties in symmetric federated kNN query and con
 \end{figure}
 
 \algref{alg:tie-knn} illustrates the detailed procedure of using the main idea to process the cases of ties.
+Specifically, lines 3-9 represent the procedure of binary-search.
+In line 10, when $sign$ equals 0 in some iteration of the binary search, we know the current searching radius $\thres$ is already enough to retrieve the exact $k$ nearest neighbors.
+A symmetric federated range query can drive the query answer.
+By contrast, in line 12, $sign$ has never become $0$, then we know we are facing the case of ties now.
+To handle this case, line 14 computes how many data objects are strictly inside the circle curve, denoted by $k_l$.
+Thus, we only need to pick $k-k_l$ from those tied objects on the circle curve.
+To do so, lines 16-20 sequentially request certain objects from each data silo, and limit the number of retrieved object no larger than $remain$ (since we do not need more).
+To avoid data objects are duplicate statistics, lines 14 and 17 will cache the (partial) answer locally at each silo.
+Finally, line 20 collects the query answer from all data silos.
+
 To ease of understanding, \expref{exp:special-knn} is used to further illustrate the main idea.
 
 \begin{example}\label{exp:special-knn}
@@ -195,8 +205,8 @@ To ease of understanding, \expref{exp:special-knn} is used to further illustrate
     }
     \If{$sign=0$}{
         % \ForEach(// perform in parallel){silo $F_i \in F$}{
-        $S_i \gets$ symmetric federated range query in $F$ with circular range $\mathcal{R}$\; 
-        $ans$ $\gets$ secure set union $\ssun(S_1,\cdots,S_n)$\;
+        $ans \gets$ symmetric federated range query in $F$ with circular range $\text{circle}(q, \thres)$\; 
+        % $ans$ $\gets$ secure set union $\ssun(S_1,\cdots,S_n)$\;
         % } 
         % $S_i \gets$ plaintext range query $\lrq(F_i, circle(q, \thres))$\;
     }
@@ -212,21 +222,6 @@ To ease of understanding, \expref{exp:special-knn} is used to further illustrate
             \lIf{$remain=0$}{\textbf{break}}
         }
         $ans$ $\gets$ secure set union $\ssun(S_1,\cdots,S_n)$ over all cached spatial objects within each data silo\;
-        % $Inside_{i} \gets$ symmetric federated range counting in $F$ with circular range $\mathcal{R}_l$\;
-        % $Outside_i \gets$ symmetric federated range query in $F$ with circular range $\mathcal{R}_r$\;
-        % \ForEach(// perform in parallel){silo $F_i \in F$}{
-        %     $Curve_i \gets Outside_i - Inside_i$\;
-        %     $v_i \gets |Inside_i|$\;
-        % }
-        % $count \gets$ secure summation $\ssum(\{v_i\})$\;
-        % $remain \gets k - count$\;
-        % \ForEach(// perform in serial){silo $F_i \in F$}{ 
-        %     $p \gets \min(\text{remain}, |Curve_i|)$\;
-        %     $Choose_i \gets$ randomly choose $p$ objects from $Curve_i$\;
-        %     $S_i \gets Inside_i \cup Choose_i$\;
-        %     $remain \gets \text{remain} - p$\;
-        %     \If{$remain=0$}{\textbf{break}\;}
-        % }
     }
     \KwRet{$ans$}\;
 \end{algorithm}

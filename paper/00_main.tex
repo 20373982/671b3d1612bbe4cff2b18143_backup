@@ -118,13 +118,16 @@ grestore
 \newcommand\defref[1]{Def.~\ref{#1}}
 \newcommand{\fakeparagraph}[1]{\vspace{0mm}\noindent\textbf{#1.}}
 
-\ifodd 1
+\ifodd 0
 \newcommand{\zeng}[1]{{\color{blue}{#1}}}
 \newcommand{\rev}[1]{{\color{blue}{#1}}}
 \newcommand{\Fan}[1]{{\color{magenta}{#1}}}
 \newcommand{\Song}[1]{{\color{cyan}{#1}}}
 \else
 \newcommand{\zeng}[1]{#1}
+\newcommand{\Fan}[1]{#1}
+\newcommand{\Song}[1]{#1}
+\newcommand{\rev}[1]{#1}
 \fi
 
 %% specifically defined in this paper
