@@ -48,9 +48,7 @@ jobs:
         cp -r ../artifacts/* ./paper
         git config user.name "overleaf Sync Bot"
         git config user.email "actions@github.com"
+        git add entrypoint.sh || true
         git add paper/
-        if [[ $(git diff --cached --stat) != '' ]]; then
-          git commit -m "Sync with Overleaf remote" && git push
-        else
-          echo 'No changes to commit'
-        fi
+        if [[ $(git diff HEAD --stat) == '' ]]; then (echo 'Working tree is clean') 
+        else (git commit -m "Sync with overleaf remote"  && git push) fi
