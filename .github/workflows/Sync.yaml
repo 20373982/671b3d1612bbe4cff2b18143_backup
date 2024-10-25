@@ -40,27 +40,14 @@ jobs:
         OVERLEAF_PROJECT_ID: ${{ secrets.OVERLEAF_PROJECT_ID }}
         OVERLEAF_COOKIE: ${{ secrets.OVERLEAF_COOKIE }}
         OVERLEAF_HOST: ${{ secrets.OVERLEAF_HOST }}
-
-    - name: Sync files and commit changes
-      run: |
+    
+    - run: |
         cd repo
         rm -rf ./paper
         mkdir -p ./paper
         cp -r ../artifacts/* ./paper
-        git config user.name "Overleaf Sync Bot"
+        git config user.name "overleaf Sync Bot"
         git config user.email "actions@github.com"
-
-        # 尝试将 entrypoint.sh 添加到暂存区
-        git add entrypoint.sh || true
-
         git add paper/
-
-        # 拉取远程更改并处理可能的冲突
-        git pull origin main --rebase || true
-
-        # 检查是否有更改可以提交
-        if [[ $(git diff --cached --stat) != '' ]]; then
-          git commit -m "Sync with Overleaf remote" && git push
-        else
-          echo 'No changes to commit'
-        fi
+        if [[ $(git diff HEAD --stat) == '' ]]; then (echo 'Working tree is clean') 
+        else (git commit -m "Sync with overleaf remote"  && git push) fi
