@@ -48,6 +48,7 @@ jobs:
         cp -r ../artifacts/* ./paper
         git config user.name "overleaf Sync Bot"
         git config user.email "actions@github.com"
+        git pull origin main --rebase || true
         git add entrypoint.sh || true
         git add paper/
         if [[ $(git diff HEAD --stat) == '' ]]; then (echo 'Working tree is clean') 
